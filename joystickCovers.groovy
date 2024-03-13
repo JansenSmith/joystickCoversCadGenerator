@@ -15,6 +15,7 @@ CSG generate(){
 	StringParameter size = new StringParameter(	type+" Default",args.get(0),Vitamins.listVitaminSizes(type))
 	HashMap<String,Object> measurments = Vitamins.getConfiguration( type,size.getStrValue())
 
+	def ballRadiusValue = measurments.ballRadius
 	def heightValue = measurments.height
 	def innerRadiusValue = measurments.innerRadius
 	def massCentroidXValue = measurments.massCentroidX
@@ -25,23 +26,26 @@ CSG generate(){
 	def outerRadiusValue = measurments.outerRadius
 	def priceValue = measurments.price
 	def sourceValue = measurments.source
+	def ballRadiusParam = new LengthParameter("Foot Curvature",ballRadiusValue,[10000,2 * Math.PI * innerRadiusValue])
+	def ballRadiusMM = ballRadiusParam.getMM()
 	for(String key:measurments.keySet().stream().sorted().collect(Collectors.toList())){
 		println "joystickCovers value "+key+" "+measurments.get(key);
 }
 	// Stub of a CAD object
-	CSG part = footBallSection(heightValue, innerRadiusValue, materialThicknessValue)
+	CSG part = footBallSection(heightValue, innerRadiusValue, materialThicknessValue, ballRadiusMM)
 	return part
 		.setParameter(size)
+		.setParameter(ballRadiusParam)
 		.setRegenerate({generate()})
 }
 return generate() 
 
-CSG footBallSection(Double heightValue, Double innerRadiusValue, Double materialThicknessValue) {
+CSG footBallSection(Double heightValue, Double innerRadiusValue, Double materialThicknessValue, Double ballRadiusMM) {
 	def arclen=innerRadiusValue
 	def capThickness=heightValue/3
 	def materialThickness = materialThicknessValue
-	def ballRadius = 10
-	def radius = ballRadius-(capThickness/2.0)
+	def ballRadius = ballRadiusMM
+	def radius = ballRadiusMM-(capThickness/2.0)
 	def neckRad = 6
 	def neckThicknes =3.5
 	def theta = (arclen*360)/(2.0*3.14159*radius)
@@ -57,7 +61,7 @@ CSG footBallSection(Double heightValue, Double innerRadiusValue, Double material
 	CSG slicer2 = new Cylinder(radius*2, radius*2).toCSG()
 			.movez(d-neckThicknes)
 
-	CSG foot = new Sphere(ballRadius,32, 16).toCSG()
+	CSG foot = new Sphere(ballRadiusMM,32, 16).toCSG()
 			.difference(slicer2)
 
 	CSG ball  = new Sphere(radius,32, 16).toCSG()
