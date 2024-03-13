@@ -46,7 +46,7 @@ CSG footBallSection(Double heightValue, Double innerRadiusValue, Double material
 	def materialThickness = materialThicknessValue
 	def ballRadius = ballRadiusMM
 	def radius = ballRadiusMM-(capThickness/2.0)
-	def neckRad = 6
+	def neckRad = innerRadiusValue - 10.5
 	def neckThicknes =3.5
 	def theta = (arclen*360)/(2.0*3.14159*radius)
 	def internalAngle = (90-(theta/2))
