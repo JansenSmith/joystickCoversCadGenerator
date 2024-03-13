@@ -72,6 +72,7 @@ CSG footBallSection(Double heightValue, Double innerRadiusValue, Double material
 	CSG pad = new Sphere(radius+materialThickness,32,16).toCSG()
 			.intersect(slicer2)
 			.difference(ball)
+			.toZMin()
 	
 	//.union(new Cylinder(radius-2, ballRadius).toCSG().toZMax())
 
